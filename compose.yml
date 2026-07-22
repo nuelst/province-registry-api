@@ -1,0 +1,27 @@
+services:
+  mongo:
+    image: mongo:6
+    container_name: province-registry-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  api:
+    build: .
+    container_name: province-registry-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    environment:
+      PORT: 3000
+      NODE_ENV: development
+      MONGO_URI: mongodb://mongo:27017/province-registry
+      JWT_SECRET: troque-este-valor-por-um-segredo-forte
+      JWT_EXPIRES_IN: 1d
+
+volumes:
+  mongo-data:
