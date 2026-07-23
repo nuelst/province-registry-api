@@ -1,0 +1,104 @@
+# Province Registry API
+
+API RESTful para gestão de utilizadores, províncias e municípios de Angola, desenvolvida
+como teste técnico para a vaga de Backend Developer (Node.js / TypeScript).
+
+Permite registo e autenticação de utilizadores (JWT), CRUD de utilizadores, províncias e
+municípios, garantindo que cada município pertence sempre à província correta.
+
+## Tecnologias
+
+- Node.js + TypeScript
+- Express.js
+- MongoDB + Mongoose
+- JWT (`jsonwebtoken`) para autenticação
+- Zod para validação
+- bcryptjs para hash de password
+- Swagger/OpenAPI (`swagger-jsdoc` + `swagger-ui-express`)
+- Vitest para testes
+
+## Estrutura do projeto
+
+```
+src/
+├── shared/       → env, conexão à BD, middlewares, erros
+├── modules/
+│   ├── auth/         → login e emissão de JWT
+│   ├── user/          → utilizadores
+│   ├── province/      → províncias
+│   └── municipality/  → municípios
+├── app.ts        → configuração do Express
+└── server.ts     → ponto de entrada
+```
+
+Cada módulo segue `domain → application → infrastructure → http`, isolando as regras de
+negócio (`application`) de Express e Mongoose.
+
+## Como instalar
+
+```bash
+git clone https://github.com/nuelst/province-registry-api.git
+cd province-registry-api
+npm install
+cp .env.example .env
+```
+
+## Variáveis de ambiente
+
+| Variável         | Descrição                          | Exemplo                                       |
+| ---------------- | ---------------------------------- | --------------------------------------------- |
+| `PORT`           | Porta do servidor HTTP             | `3000`                                        |
+| `NODE_ENV`       | Ambiente de execução               | `development` \| `production` \| `test`       |
+| `MONGO_URI`      | String de conexão do MongoDB       | `mongodb://localhost:27017/province-registry` |
+| `JWT_SECRET`     | Segredo para assinar os tokens JWT | `um-segredo-forte-e-aleatorio`                |
+| `JWT_EXPIRES_IN` | Tempo de expiração do token        | `1d`                                          |
+
+Para gerar um `JWT_SECRET` aleatório:
+
+```bash
+openssl rand -hex 32
+# ou, sem depender do OpenSSL:
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+## Como executar
+
+```bash
+# Subir o MongoDB (ou usar docker compose up -d mongo)
+npm run dev          # desenvolvimento, com hot-reload
+
+npm run build         # build de produção
+npm start
+```
+
+Servidor disponível em `http://localhost:3000`:
+
+- Health check: `GET /health`
+- Documentação Swagger: `GET /doc`
+
+Também é possível subir tudo (API + MongoDB) com:
+
+```bash
+docker compose up
+```
+
+## Como testar
+
+```bash
+npm test
+```
+
+Os testes cobrem os casos de uso da camada `application` com repositórios mockados
+(não requerem MongoDB a correr), com foco na regra de negócio que garante que o
+município selecionado pertence à província informada.
+
+## Documentação Swagger
+
+Após correr o projeto localmente: `http://localhost:3000/doc`
+
+## Autor
+
+**Manuel**
+
+- GitHub: [@nuelst](https://github.com/nuelst)
+- LinkedIn: [in/nuelst](https://www.linkedin.com/in/nuelst/)
