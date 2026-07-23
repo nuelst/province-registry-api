@@ -2,7 +2,12 @@ import { AppError } from '../../../shared/errors/app-error';
 import type { MunicipalityRepository } from '../../municipality/domain/municipality.repository';
 import type { ProvinceRepository } from '../../province/domain/province.repository';
 import type { PasswordHasher } from '../domain/password-hasher';
-import { type CreateUserProps, type SafeUser, toSafeUser } from '../domain/user.entity';
+import {
+  type CreateUserProps,
+  type SafeUserWithRelations,
+  toSafeUser,
+  toSafeUserWithRelations,
+} from '../domain/user.entity';
 import type { UserRepository } from '../domain/user.repository';
 
 export class RegisterUserUseCase {
@@ -13,7 +18,7 @@ export class RegisterUserUseCase {
     private readonly passwordHasher: PasswordHasher,
   ) {}
 
-  async execute(input: CreateUserProps): Promise<SafeUser> {
+  async execute(input: CreateUserProps): Promise<SafeUserWithRelations> {
     const existingUser = await this.userRepository.findByEmail(input.email);
     if (existingUser) {
       throw AppError.conflict('Já existe um utilizador com este email', 'EMAIL_ALREADY_EXISTS');
@@ -47,6 +52,6 @@ export class RegisterUserUseCase {
       role: input.role ?? 'user',
     });
 
-    return toSafeUser(user);
+    return toSafeUserWithRelations(toSafeUser(user), province, municipality);
   }
 }

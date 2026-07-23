@@ -23,8 +23,8 @@ const passwordHasher = new BcryptPasswordHasher();
 
 const controller = new UserController(
   new RegisterUserUseCase(userRepository, provinceRepository, municipalityRepository, passwordHasher),
-  new ListUsersUseCase(userRepository),
-  new GetUserUseCase(userRepository),
+  new ListUsersUseCase(userRepository, provinceRepository, municipalityRepository),
+  new GetUserUseCase(userRepository, provinceRepository, municipalityRepository),
   new UpdateUserUseCase(userRepository, provinceRepository, municipalityRepository, passwordHasher),
   new DeleteUserUseCase(userRepository),
 );

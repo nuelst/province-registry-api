@@ -2,7 +2,12 @@ import { AppError } from '../../../shared/errors/app-error';
 import type { MunicipalityRepository } from '../../municipality/domain/municipality.repository';
 import type { ProvinceRepository } from '../../province/domain/province.repository';
 import type { PasswordHasher } from '../domain/password-hasher';
-import { type SafeUser, toSafeUser, type UpdateUserProps } from '../domain/user.entity';
+import {
+  type SafeUserWithRelations,
+  toSafeUser,
+  toSafeUserWithRelations,
+  type UpdateUserProps,
+} from '../domain/user.entity';
 import type { UserRepository } from '../domain/user.repository';
 
 export class UpdateUserUseCase {
@@ -13,7 +18,7 @@ export class UpdateUserUseCase {
     private readonly passwordHasher: PasswordHasher,
   ) {}
 
-  async execute(id: string, input: UpdateUserProps): Promise<SafeUser> {
+  async execute(id: string, input: UpdateUserProps): Promise<SafeUserWithRelations> {
     const current = await this.userRepository.findById(id);
     if (!current) {
       throw AppError.notFound('Utilizador não encontrado', 'USER_NOT_FOUND');
@@ -68,6 +73,15 @@ export class UpdateUserUseCase {
       throw AppError.notFound('Utilizador não encontrado', 'USER_NOT_FOUND');
     }
 
-    return toSafeUser(updated);
+    const [province, municipality] = await Promise.all([
+      this.provinceRepository.findById(targetProvinceId),
+      this.municipalityRepository.findById(targetMunicipalityId),
+    ]);
+
+    if (!province || !municipality) {
+      throw AppError.notFound('Província ou município do utilizador não encontrado', 'NOT_FOUND');
+    }
+
+    return toSafeUserWithRelations(toSafeUser(updated), province, municipality);
   }
 }

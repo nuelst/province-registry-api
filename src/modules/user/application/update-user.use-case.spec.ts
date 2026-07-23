@@ -134,11 +134,16 @@ describe('UpdateUserUseCase', () => {
       deps.passwordHasher,
     );
 
-    await useCase.execute(userId, { province: 'province-huila-id', municipality: 'municipality-lubango-id' });
+    const result = await useCase.execute(userId, {
+      province: 'province-huila-id',
+      municipality: 'municipality-lubango-id',
+    });
 
     expect(deps.userRepository.update).toHaveBeenCalledWith(
       userId,
       expect.objectContaining({ province: 'province-huila-id', municipality: 'municipality-lubango-id' }),
     );
+    expect(result.province).toEqual({ id: 'province-huila-id', name: 'Huíla' });
+    expect(result.municipality).toEqual({ id: 'municipality-lubango-id', name: 'Lubango' });
   });
 });
