@@ -1,5 +1,5 @@
 import swaggerJSDoc from 'swagger-jsdoc';
-import { env } from './env';
+import { baseUrl, env } from './env';
 
 const objectIdExample = '6a4e7a856c166ae5f85a7950';
 
@@ -15,8 +15,8 @@ const swaggerDefinition: swaggerJSDoc.SwaggerDefinition = {
   },
   servers: [
     {
-      url: `http://localhost:${env.PORT}/api`,
-      description: 'Servidor local',
+      url: `${baseUrl}/api`,
+      description: env.NODE_ENV === 'production' ? 'Servidor em produção' : 'Servidor local',
     },
   ],
   components: {

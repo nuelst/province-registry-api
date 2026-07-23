@@ -7,6 +7,7 @@ const envSchema = z.object({
   MONGO_URI: z.string().min(1, 'MONGO_URI é obrigatório'),
   JWT_SECRET: z.string().min(8, 'JWT_SECRET deve ter no mínimo 8 caracteres'),
   JWT_EXPIRES_IN: z.string().default('1d'),
+  APP_URL: z.string().url('APP_URL deve ser uma URL válida').optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -17,3 +18,5 @@ if (!parsed.success) {
 }
 
 export const env = parsed.data;
+
+export const baseUrl = env.APP_URL ?? `http://localhost:${env.PORT}`;
