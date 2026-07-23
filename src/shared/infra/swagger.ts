@@ -161,6 +161,48 @@ const swaggerDefinition: swaggerJSDoc.SwaggerDefinition = {
           updatedAt: { type: 'string', format: 'date-time' },
         },
       },
+      PaginationMeta: {
+        type: 'object',
+        properties: {
+          page: { type: 'integer', example: 1 },
+          limit: { type: 'integer', example: 20 },
+          total: { type: 'integer', example: 137 },
+          totalPages: { type: 'integer', example: 7 },
+        },
+      },
+      PaginatedUsers: {
+        allOf: [
+          { $ref: '#/components/schemas/PaginationMeta' },
+          {
+            type: 'object',
+            properties: {
+              data: { type: 'array', items: { $ref: '#/components/schemas/UserResponse' } },
+            },
+          },
+        ],
+      },
+      PaginatedProvinces: {
+        allOf: [
+          { $ref: '#/components/schemas/PaginationMeta' },
+          {
+            type: 'object',
+            properties: {
+              data: { type: 'array', items: { $ref: '#/components/schemas/ProvinceResponse' } },
+            },
+          },
+        ],
+      },
+      PaginatedMunicipalities: {
+        allOf: [
+          { $ref: '#/components/schemas/PaginationMeta' },
+          {
+            type: 'object',
+            properties: {
+              data: { type: 'array', items: { $ref: '#/components/schemas/MunicipalityResponse' } },
+            },
+          },
+        ],
+      },
     },
   },
 };

@@ -1,5 +1,12 @@
+import type { FilterQuery } from 'mongoose';
+import {
+  buildPaginatedResult,
+  escapeRegex,
+  type PaginatedResult,
+  resolvePagination,
+} from '../../../shared/utils/pagination';
 import type { CreateProvinceProps, Province, UpdateProvinceProps } from '../domain/province.entity';
-import type { ProvinceRepository } from '../domain/province.repository';
+import type { FindAllProvincesOptions, ProvinceRepository } from '../domain/province.repository';
 import { type ProvinceDocument, ProvinceModel } from './province.model';
 
 function toEntity(doc: ProvinceDocument): Province {
@@ -20,6 +27,22 @@ export class MongoProvinceRepository implements ProvinceRepository {
   async findAll(): Promise<Province[]> {
     const docs = await ProvinceModel.find().sort({ name: 1 });
     return docs.map(toEntity);
+  }
+
+  async findAllPaginated(options: FindAllProvincesOptions): Promise<PaginatedResult<Province>> {
+    const filter: FilterQuery<ProvinceDocument> = {};
+    if (options.name) filter.name = new RegExp(escapeRegex(options.name), 'i');
+
+    const total = await ProvinceModel.countDocuments(filter);
+    const resolved = resolvePagination(options, total);
+
+    let query = ProvinceModel.find(filter).sort({ name: 1 });
+    if (resolved.isPaginated) {
+      query = query.skip(resolved.skip).limit(resolved.limit);
+    }
+    const docs = await query;
+
+    return buildPaginatedResult(docs.map(toEntity), resolved, total);
   }
 
   async findById(id: string): Promise<Province | null> {

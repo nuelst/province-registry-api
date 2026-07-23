@@ -5,6 +5,7 @@ import type { GetUserUseCase } from '../application/get-user.use-case';
 import type { ListUsersUseCase } from '../application/list-users.use-case';
 import type { RegisterUserUseCase } from '../application/register-user.use-case';
 import type { UpdateUserUseCase } from '../application/update-user.use-case';
+import type { FindAllUsersOptions } from '../domain/user.repository';
 
 export class UserController {
   constructor(
@@ -20,8 +21,8 @@ export class UserController {
     res.status(201).json(user);
   };
 
-  list = async (_req: Request, res: Response): Promise<void> => {
-    const users = await this.listUsersUseCase.execute();
+  list = async (req: Request, res: Response): Promise<void> => {
+    const users = await this.listUsersUseCase.execute(req.query as FindAllUsersOptions);
     res.status(200).json(users);
   };
 

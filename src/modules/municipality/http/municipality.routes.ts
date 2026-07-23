@@ -92,22 +92,32 @@ router.post(
  * /municipalities:
  *   get:
  *     tags: [Municipalities]
- *     summary: Listar municípios (opcionalmente filtrado por província)
+ *     summary: Listar municípios (opcionalmente filtrado por província e/ou nome)
  *     parameters:
  *       - in: query
  *         name: province
- *         required: false
- *         schema:
- *           type: string
+ *         schema: { type: string }
+ *       - in: query
+ *         name: name
+ *         schema: { type: string }
+ *         description: Pesquisa parcial, case-insensitive, pelo nome
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, minimum: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, minimum: 1, maximum: 100 }
  *     responses:
  *       200:
- *         description: Lista de municípios
+ *         description: Lista de municípios (array simples) ou página paginada, consoante `page`/`limit` sejam informados
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/MunicipalityResponse'
+ *               oneOf:
+ *                 - type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/MunicipalityResponse'
+ *                 - $ref: '#/components/schemas/PaginatedMunicipalities'
  */
 router.get('/', validate(listMunicipalitiesQuerySchema), asyncHandler(controller.list));
 

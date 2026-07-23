@@ -1,6 +1,13 @@
+import type { FilterQuery } from 'mongoose';
+import {
+  buildPaginatedResult,
+  type PaginatedResult,
+  resolvePagination,
+} from '../../../shared/utils/pagination';
 import type { User } from '../domain/user.entity';
 import type {
   CreateUserPersistenceProps,
+  FindAllUsersOptions,
   UpdateUserPersistenceProps,
   UserRepository,
 } from '../domain/user.repository';
@@ -29,6 +36,24 @@ export class MongoUserRepository implements UserRepository {
   async findAll(): Promise<User[]> {
     const docs = await UserModel.find().select('+passwordHash').sort({ name: 1 });
     return docs.map(toEntity);
+  }
+
+  async findAllPaginated(options: FindAllUsersOptions): Promise<PaginatedResult<User>> {
+    const filter: FilterQuery<UserDocument> = {};
+    if (options.province) filter.province = options.province;
+    if (options.municipality) filter.municipality = options.municipality;
+    if (options.role) filter.role = options.role;
+
+    const total = await UserModel.countDocuments(filter);
+    const resolved = resolvePagination(options, total);
+
+    let query = UserModel.find(filter).select('+passwordHash').sort({ name: 1 });
+    if (resolved.isPaginated) {
+      query = query.skip(resolved.skip).limit(resolved.limit);
+    }
+    const docs = await query;
+
+    return buildPaginatedResult(docs.map(toEntity), resolved, total);
   }
 
   async findById(id: string): Promise<User | null> {

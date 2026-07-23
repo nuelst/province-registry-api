@@ -1,7 +1,10 @@
 import { z } from 'zod';
+import { MAX_LIMIT } from '../../../shared/utils/pagination';
 
 const objectIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, 'ID inválido');
 const roleSchema = z.enum(['admin', 'user']);
+const pageSchema = z.coerce.number().int().min(1).optional();
+const limitSchema = z.coerce.number().int().min(1).max(MAX_LIMIT).optional();
 
 export const createUserSchema = z.object({
   body: z.object({
@@ -37,4 +40,16 @@ export const userIdParamSchema = z.object({
     id: z.string().min(1),
   }),
   query: z.object({}).optional(),
+});
+
+export const listUsersQuerySchema = z.object({
+  body: z.object({}).optional(),
+  params: z.object({}).optional(),
+  query: z.object({
+    province: objectIdSchema.optional(),
+    municipality: objectIdSchema.optional(),
+    role: roleSchema.optional(),
+    page: pageSchema,
+    limit: limitSchema,
+  }),
 });

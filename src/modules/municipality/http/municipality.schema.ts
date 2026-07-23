@@ -1,6 +1,9 @@
 import { z } from 'zod';
+import { MAX_LIMIT } from '../../../shared/utils/pagination';
 
 const objectIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, 'ID inválido');
+const pageSchema = z.coerce.number().int().min(1).optional();
+const limitSchema = z.coerce.number().int().min(1).max(MAX_LIMIT).optional();
 
 export const createMunicipalitySchema = z.object({
   body: z.object({
@@ -35,5 +38,8 @@ export const listMunicipalitiesQuerySchema = z.object({
   params: z.object({}).optional(),
   query: z.object({
     province: objectIdSchema.optional(),
+    name: z.string().trim().min(1).optional(),
+    page: pageSchema,
+    limit: limitSchema,
   }),
 });
