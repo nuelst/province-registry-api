@@ -6,6 +6,7 @@ export interface UserDocument extends Document {
   passwordHash: string;
   province: Types.ObjectId;
   municipality: Types.ObjectId;
+  role: 'admin' | 'user';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -17,6 +18,7 @@ const userSchema = new Schema<UserDocument>(
     passwordHash: { type: String, required: true, select: false },
     province: { type: Schema.Types.ObjectId, ref: 'Province', required: true },
     municipality: { type: Schema.Types.ObjectId, ref: 'Municipality', required: true },
+    role: { type: String, enum: ['admin', 'user'], default: 'user', required: true },
   },
   { timestamps: true },
 );

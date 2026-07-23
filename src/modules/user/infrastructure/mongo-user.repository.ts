@@ -14,6 +14,7 @@ function toEntity(doc: UserDocument): User {
     passwordHash: doc.passwordHash,
     province: doc.province.toString(),
     municipality: doc.municipality.toString(),
+    role: doc.role,
     createdAt: doc.createdAt,
     updatedAt: doc.updatedAt,
   };

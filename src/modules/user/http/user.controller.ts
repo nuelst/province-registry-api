@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import type { AuthenticatedRequest } from '../../../shared/middlewares/auth.middleware';
 import type { DeleteUserUseCase } from '../application/delete-user.use-case';
 import type { GetUserUseCase } from '../application/get-user.use-case';
 import type { ListUsersUseCase } from '../application/list-users.use-case';
@@ -29,8 +30,12 @@ export class UserController {
     res.status(200).json(user);
   };
 
-  update = async (req: Request, res: Response): Promise<void> => {
-    const user = await this.updateUserUseCase.execute(req.params.id, req.body);
+  update = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const isAdmin = req.user?.role === 'admin';
+    const { role: _role, ...rest } = req.body;
+    const payload = isAdmin ? req.body : rest;
+
+    const user = await this.updateUserUseCase.execute(req.params.id, payload);
     res.status(200).json(user);
   };
 

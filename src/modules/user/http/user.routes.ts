@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { asyncHandler } from '../../../shared/middlewares/async-handler';
 import { authMiddleware } from '../../../shared/middlewares/auth.middleware';
+import { requireRole } from '../../../shared/middlewares/require-role.middleware';
+import { requireSelfOrRole } from '../../../shared/middlewares/require-self-or-role.middleware';
 import { validate } from '../../../shared/middlewares/validate.middleware';
 import { MongoMunicipalityRepository } from '../../municipality/infrastructure/mongo-municipality.repository';
 import { MongoProvinceRepository } from '../../province/infrastructure/mongo-province.repository';
@@ -34,7 +36,7 @@ const router = Router();
  * /users:
  *   post:
  *     tags: [Users]
- *     summary: Criar utilizador (rota protegida do CRUD)
+ *     summary: Criar utilizador (apenas admin)
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -42,7 +44,7 @@ const router = Router();
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/CreateUser'
+ *             $ref: '#/components/schemas/AdminCreateUser'
  *     responses:
  *       201:
  *         description: Utilizador criado
@@ -62,6 +64,12 @@ const router = Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Acesso negado (code "FORBIDDEN")
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       409:
  *         description: Email já existente (code "EMAIL_ALREADY_EXISTS")
  *         content:
@@ -69,7 +77,13 @@ const router = Router();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/', authMiddleware, validate(createUserSchema), asyncHandler(controller.create));
+router.post(
+  '/',
+  authMiddleware,
+  requireRole('admin'),
+  validate(createUserSchema),
+  asyncHandler(controller.create),
+);
 
 /**
  * @openapi
@@ -172,6 +186,12 @@ router.get('/:id', authMiddleware, validate(userIdParamSchema), asyncHandler(con
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Só o próprio utilizador ou um admin (code "FORBIDDEN")
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       404:
  *         description: Utilizador não encontrado (code "USER_NOT_FOUND")
  *         content:
@@ -185,7 +205,13 @@ router.get('/:id', authMiddleware, validate(userIdParamSchema), asyncHandler(con
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.put('/:id', authMiddleware, validate(updateUserSchema), asyncHandler(controller.update));
+router.put(
+  '/:id',
+  authMiddleware,
+  requireSelfOrRole('id', 'admin'),
+  validate(updateUserSchema),
+  asyncHandler(controller.update),
+);
 
 /**
  * @openapi
@@ -210,6 +236,12 @@ router.put('/:id', authMiddleware, validate(updateUserSchema), asyncHandler(cont
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Só o próprio utilizador ou um admin (code "FORBIDDEN")
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       404:
  *         description: Utilizador não encontrado (code "USER_NOT_FOUND")
  *         content:
@@ -217,6 +249,12 @@ router.put('/:id', authMiddleware, validate(updateUserSchema), asyncHandler(cont
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.delete('/:id', authMiddleware, validate(userIdParamSchema), asyncHandler(controller.remove));
+router.delete(
+  '/:id',
+  authMiddleware,
+  requireSelfOrRole('id', 'admin'),
+  validate(userIdParamSchema),
+  asyncHandler(controller.remove),
+);
 
 export { router as userRoutes };
