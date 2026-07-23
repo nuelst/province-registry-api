@@ -80,14 +80,21 @@ const swaggerDefinition: swaggerJSDoc.SwaggerDefinition = {
           },
         },
       },
+      RelationRef: {
+        type: 'object',
+        properties: {
+          id: { type: 'string', example: objectIdExample },
+          name: { type: 'string', example: 'Luanda' },
+        },
+      },
       UserResponse: {
         type: 'object',
         properties: {
           id: { type: 'string', example: objectIdExample },
           name: { type: 'string', example: 'João Silva' },
           email: { type: 'string', example: 'joao@email.com' },
-          province: { type: 'string', example: objectIdExample },
-          municipality: { type: 'string', example: '6a563455b28473c835a1b3c1' },
+          province: { $ref: '#/components/schemas/RelationRef' },
+          municipality: { $ref: '#/components/schemas/RelationRef' },
           role: { type: 'string', enum: ['admin', 'user'], example: 'user' },
           createdAt: { type: 'string', format: 'date-time' },
           updatedAt: { type: 'string', format: 'date-time' },

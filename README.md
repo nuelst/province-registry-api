@@ -123,7 +123,8 @@ município selecionado pertence à província informada.
 
 ## Documentação Swagger
 
-Após correr o projeto localmente: `http://localhost:3000/doc`
+- Produção: https://province-registry-api.up.railway.app/doc/
+- Local: após correr o projeto, em `http://localhost:3000/doc`
 
 ## Autor
 

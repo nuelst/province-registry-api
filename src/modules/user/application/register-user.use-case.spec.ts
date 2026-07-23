@@ -86,6 +86,8 @@ describe('RegisterUserUseCase', () => {
     expect(deps.userRepository.create).toHaveBeenCalledWith(
       expect.objectContaining({ passwordHash: 'hashed-password' }),
     );
+    expect(result.province).toEqual({ id: baseInput.province, name: 'Luanda' });
+    expect(result.municipality).toEqual({ id: baseInput.municipality, name: 'Talatona' });
   });
 
   it('rejeita quando o email já está em uso', async () => {

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "API RESTful para gestão de utilizadores, províncias e municípios de Angola",
   "main": "dist/server.js",
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc -p tsconfig.json",
