@@ -6,6 +6,18 @@ como teste técnico para a vaga de Backend Developer (Node.js / TypeScript).
 Permite registo e autenticação de utilizadores (JWT), CRUD de utilizadores, províncias e
 municípios, garantindo que cada município pertence sempre à província correta.
 
+## Roles
+
+Existem dois papéis: `user` e `admin`.
+
+- **user** (papel por omissão, atribuído por `/auth/register`): só pode consultar/atualizar/apagar
+  a **própria** conta e apenas ler províncias e municípios.
+- **admin**: pode criar/atualizar/apagar qualquer utilizador (incluindo definir o role de outros
+  em `POST /users`) e é o único que pode escrever (criar/atualizar/apagar) províncias e municípios.
+
+Um utilizador comum nunca consegue alterar o próprio `role` — esse campo só é aceite quando quem
+faz o pedido já é admin.
+
 ## Tecnologias
 
 - Node.js + TypeScript
@@ -52,6 +64,9 @@ cp .env.example .env
 | `MONGO_URI`      | String de conexão do MongoDB       | `mongodb://localhost:27017/province-registry` |
 | `JWT_SECRET`     | Segredo para assinar os tokens JWT | `um-segredo-forte-e-aleatorio`                |
 | `JWT_EXPIRES_IN` | Tempo de expiração do token        | `1d`                                          |
+| `ADMIN_EMAIL`    | Email do admin criado pelo `seed:admin` (opcional, só o script) | `admin@email.com`         |
+| `ADMIN_PASSWORD` | Password do admin criado pelo `seed:admin` (opcional, só o script) | `password123`           |
+| `ADMIN_NAME`     | Nome do admin criado pelo `seed:admin` (opcional, default `Administrador`) | `Administrador`  |
 
 Para gerar um `JWT_SECRET` aleatório:
 
@@ -81,6 +96,20 @@ Também é possível subir tudo (API + MongoDB) com:
 ```bash
 docker compose up
 ```
+
+### Bootstrap do primeiro admin
+
+Como `/auth/register` só cria utilizadores com `role: user` e criar/gerir províncias e
+municípios passou a exigir `role: admin`, é preciso um primeiro admin para desbloquear o resto.
+Defina `ADMIN_EMAIL` e `ADMIN_PASSWORD` no `.env` e corra:
+
+```bash
+npm run seed:admin
+```
+
+O script é idempotente (não faz nada se o email já existir) e, se a base de dados estiver
+completamente vazia, cria também uma província e um município por omissão para que o registo de
+novos utilizadores tenha para onde apontar.
 
 ## Como testar
 

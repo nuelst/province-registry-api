@@ -55,6 +55,29 @@ const swaggerDefinition: swaggerJSDoc.SwaggerDefinition = {
           password: { type: 'string', example: 'novaPassword123' },
           province: { type: 'string', example: objectIdExample },
           municipality: { type: 'string', example: '6a563455b28473c835a1b3c1' },
+          role: {
+            type: 'string',
+            enum: ['admin', 'user'],
+            example: 'user',
+            description: 'Apenas um administrador pode alterar este campo.',
+          },
+        },
+      },
+      AdminCreateUser: {
+        type: 'object',
+        required: ['name', 'email', 'password', 'province', 'municipality'],
+        properties: {
+          name: { type: 'string', example: 'João Silva' },
+          email: { type: 'string', example: 'joao@email.com' },
+          password: { type: 'string', example: 'password123' },
+          province: { type: 'string', example: objectIdExample },
+          municipality: { type: 'string', example: '6a563455b28473c835a1b3c1' },
+          role: {
+            type: 'string',
+            enum: ['admin', 'user'],
+            example: 'user',
+            description: 'Apenas administradores podem definir. Default: user.',
+          },
         },
       },
       UserResponse: {
@@ -65,6 +88,7 @@ const swaggerDefinition: swaggerJSDoc.SwaggerDefinition = {
           email: { type: 'string', example: 'joao@email.com' },
           province: { type: 'string', example: objectIdExample },
           municipality: { type: 'string', example: '6a563455b28473c835a1b3c1' },
+          role: { type: 'string', enum: ['admin', 'user'], example: 'user' },
           createdAt: { type: 'string', format: 'date-time' },
           updatedAt: { type: 'string', format: 'date-time' },
         },
