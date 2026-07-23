@@ -4,6 +4,7 @@ import type { DeleteMunicipalityUseCase } from '../application/delete-municipali
 import type { GetMunicipalityUseCase } from '../application/get-municipality.use-case';
 import type { ListMunicipalitiesUseCase } from '../application/list-municipalities.use-case';
 import type { UpdateMunicipalityUseCase } from '../application/update-municipality.use-case';
+import type { FindAllMunicipalitiesOptions } from '../domain/municipality.repository';
 
 export class MunicipalityController {
   constructor(
@@ -20,8 +21,9 @@ export class MunicipalityController {
   };
 
   list = async (req: Request, res: Response): Promise<void> => {
-    const province = req.query.province as string | undefined;
-    const municipalities = await this.listMunicipalitiesUseCase.execute(province);
+    const municipalities = await this.listMunicipalitiesUseCase.execute(
+      req.query as FindAllMunicipalitiesOptions,
+    );
     res.status(200).json(municipalities);
   };
 

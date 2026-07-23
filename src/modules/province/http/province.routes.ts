@@ -11,7 +11,12 @@ import { ListProvincesUseCase } from '../application/list-provinces.use-case';
 import { UpdateProvinceUseCase } from '../application/update-province.use-case';
 import { MongoProvinceRepository } from '../infrastructure/mongo-province.repository';
 import { ProvinceController } from './province.controller';
-import { createProvinceSchema, provinceIdParamSchema, updateProvinceSchema } from './province.schema';
+import {
+  createProvinceSchema,
+  listProvincesQuerySchema,
+  provinceIdParamSchema,
+  updateProvinceSchema,
+} from './province.schema';
 
 const provinceRepository = new MongoProvinceRepository();
 const municipalityRepository = new MongoMunicipalityRepository();
@@ -86,17 +91,30 @@ router.post(
  *   get:
  *     tags: [Provinces]
  *     summary: Listar todas as províncias
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         schema: { type: string }
+ *         description: Pesquisa parcial, case-insensitive, pelo nome
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, minimum: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, minimum: 1, maximum: 100 }
  *     responses:
  *       200:
- *         description: Lista de províncias
+ *         description: Lista de províncias (array simples) ou página paginada, consoante `page`/`limit` sejam informados
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/ProvinceResponse'
+ *               oneOf:
+ *                 - type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/ProvinceResponse'
+ *                 - $ref: '#/components/schemas/PaginatedProvinces'
  */
-router.get('/', asyncHandler(controller.list));
+router.get('/', validate(listProvincesQuerySchema), asyncHandler(controller.list));
 
 /**
  * @openapi

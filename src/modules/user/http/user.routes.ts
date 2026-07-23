@@ -14,7 +14,7 @@ import { UpdateUserUseCase } from '../application/update-user.use-case';
 import { BcryptPasswordHasher } from '../infrastructure/bcrypt-password-hasher';
 import { MongoUserRepository } from '../infrastructure/mongo-user.repository';
 import { UserController } from './user.controller';
-import { createUserSchema, updateUserSchema, userIdParamSchema } from './user.schema';
+import { createUserSchema, listUsersQuerySchema, updateUserSchema, userIdParamSchema } from './user.schema';
 
 const userRepository = new MongoUserRepository();
 const provinceRepository = new MongoProvinceRepository();
@@ -93,15 +93,33 @@ router.post(
  *     summary: Listar utilizadores
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: province
+ *         schema: { type: string }
+ *       - in: query
+ *         name: municipality
+ *         schema: { type: string }
+ *       - in: query
+ *         name: role
+ *         schema: { type: string, enum: [admin, user] }
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, minimum: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, minimum: 1, maximum: 100 }
  *     responses:
  *       200:
- *         description: Lista de utilizadores
+ *         description: Lista de utilizadores (array simples) ou página paginada, consoante `page`/`limit` sejam informados
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/UserResponse'
+ *               oneOf:
+ *                 - type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/UserResponse'
+ *                 - $ref: '#/components/schemas/PaginatedUsers'
  *       401:
  *         description: Não autenticado (codes "MISSING_TOKEN", "INVALID_TOKEN")
  *         content:
@@ -109,7 +127,7 @@ router.post(
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/', authMiddleware, asyncHandler(controller.list));
+router.get('/', authMiddleware, validate(listUsersQuerySchema), asyncHandler(controller.list));
 
 /**
  * @openapi

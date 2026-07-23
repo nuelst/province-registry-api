@@ -121,6 +121,27 @@ Os testes cobrem os casos de uso da camada `application` com repositórios mocka
 (não requerem MongoDB a correr), com foco na regra de negócio que garante que o
 município selecionado pertence à província informada.
 
+## Paginação e filtros
+
+Os três endpoints de listagem (`GET /users`, `GET /provinces`, `GET /municipalities`) suportam
+paginação **opcional**: sem `page`/`limit` devolvem sempre o array completo (comportamento atual,
+usado por exemplo pelos dropdowns de registo). Com `page` e/ou `limit`, devolvem um envelope
+`{ data, page, limit, total, totalPages }`. Os filtros aplicam-se sempre, com ou sem paginação.
+
+| Endpoint               | Filtros                          |
+| ----------------------- | --------------------------------- |
+| `GET /users`            | `province`, `municipality`, `role` |
+| `GET /provinces`        | `name` (pesquisa parcial)          |
+| `GET /municipalities`   | `province`, `name` (pesquisa parcial) |
+
+Exemplos:
+
+```
+GET /api/users?role=admin
+GET /api/provinces?name=lua&page=1&limit=10
+GET /api/municipalities?province=<id>&page=2
+```
+
 ## Documentação Swagger
 
 - Produção: https://province-registry-api.up.railway.app/doc/

@@ -4,6 +4,7 @@ import type { DeleteProvinceUseCase } from '../application/delete-province.use-c
 import type { GetProvinceUseCase } from '../application/get-province.use-case';
 import type { ListProvincesUseCase } from '../application/list-provinces.use-case';
 import type { UpdateProvinceUseCase } from '../application/update-province.use-case';
+import type { FindAllProvincesOptions } from '../domain/province.repository';
 
 export class ProvinceController {
   constructor(
@@ -19,8 +20,8 @@ export class ProvinceController {
     res.status(201).json(province);
   };
 
-  list = async (_req: Request, res: Response): Promise<void> => {
-    const provinces = await this.listProvincesUseCase.execute();
+  list = async (req: Request, res: Response): Promise<void> => {
+    const provinces = await this.listProvincesUseCase.execute(req.query as FindAllProvincesOptions);
     res.status(200).json(provinces);
   };
 
