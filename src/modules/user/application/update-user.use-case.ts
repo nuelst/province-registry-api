@@ -61,6 +61,7 @@ export class UpdateUserUseCase {
       passwordHash,
       province: input.province,
       municipality: input.municipality,
+      role: input.role,
     });
 
     if (!updated) {

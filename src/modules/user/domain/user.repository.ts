@@ -1,5 +1,5 @@
 import type { UserExistenceChecker } from '../../municipality/application/delete-municipality.use-case';
-import type { User } from './user.entity';
+import type { Role, User } from './user.entity';
 
 export interface CreateUserPersistenceProps {
   name: string;
@@ -7,6 +7,7 @@ export interface CreateUserPersistenceProps {
   passwordHash: string;
   province: string;
   municipality: string;
+  role: Role;
 }
 
 export interface UpdateUserPersistenceProps {
@@ -15,6 +16,7 @@ export interface UpdateUserPersistenceProps {
   passwordHash?: string;
   province?: string;
   municipality?: string;
+  role?: Role;
 }
 
 export interface UserRepository extends UserExistenceChecker {

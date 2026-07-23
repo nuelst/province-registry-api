@@ -142,4 +142,32 @@ describe('RegisterUserUseCase', () => {
 
     expect(deps.userRepository.create).not.toHaveBeenCalled();
   });
+
+  it('atribui role "user" por omissão quando role não é informado (ex: /auth/register)', async () => {
+    const deps = buildDeps();
+    const useCase = new RegisterUserUseCase(
+      deps.userRepository,
+      deps.provinceRepository,
+      deps.municipalityRepository,
+      deps.passwordHasher,
+    );
+
+    await useCase.execute(baseInput);
+
+    expect(deps.userRepository.create).toHaveBeenCalledWith(expect.objectContaining({ role: 'user' }));
+  });
+
+  it('propaga role "admin" quando explicitamente informado (fluxo admin em POST /users)', async () => {
+    const deps = buildDeps();
+    const useCase = new RegisterUserUseCase(
+      deps.userRepository,
+      deps.provinceRepository,
+      deps.municipalityRepository,
+      deps.passwordHasher,
+    );
+
+    await useCase.execute({ ...baseInput, role: 'admin' });
+
+    expect(deps.userRepository.create).toHaveBeenCalledWith(expect.objectContaining({ role: 'admin' }));
+  });
 });

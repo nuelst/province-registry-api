@@ -42,7 +42,6 @@ export class MongoUserRepository implements UserRepository {
   }
 
   async update(id: string, data: UpdateUserPersistenceProps): Promise<User | null> {
-    // remove chaves undefined para não sobrescrever campos não enviados
     const payload = Object.fromEntries(Object.entries(data).filter(([, v]) => v !== undefined));
 
     const doc = await UserModel.findByIdAndUpdate(id, payload, { new: true, runValidators: true }).select(

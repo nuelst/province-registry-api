@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { asyncHandler } from '../../../shared/middlewares/async-handler';
 import { authMiddleware } from '../../../shared/middlewares/auth.middleware';
+import { requireRole } from '../../../shared/middlewares/require-role.middleware';
 import { validate } from '../../../shared/middlewares/validate.middleware';
 import { MongoProvinceRepository } from '../../province/infrastructure/mongo-province.repository';
 import { MongoUserRepository } from '../../user/infrastructure/mongo-user.repository';
@@ -37,7 +38,7 @@ const router = Router();
  * /municipalities:
  *   post:
  *     tags: [Municipalities]
- *     summary: Criar um novo município
+ *     summary: Criar um novo município (apenas admin)
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -65,6 +66,12 @@ const router = Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Acesso negado (code "FORBIDDEN")
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       409:
  *         description: Município duplicado nesta província (code "MUNICIPALITY_ALREADY_EXISTS")
  *         content:
@@ -72,7 +79,13 @@ const router = Router();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/', authMiddleware, validate(createMunicipalitySchema), asyncHandler(controller.create));
+router.post(
+  '/',
+  authMiddleware,
+  requireRole('admin'),
+  validate(createMunicipalitySchema),
+  asyncHandler(controller.create),
+);
 
 /**
  * @openapi
@@ -131,7 +144,7 @@ router.get('/:id', validate(municipalityIdParamSchema), asyncHandler(controller.
  * /municipalities/{id}:
  *   put:
  *     tags: [Municipalities]
- *     summary: Atualizar município
+ *     summary: Atualizar município (apenas admin)
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -165,6 +178,12 @@ router.get('/:id', validate(municipalityIdParamSchema), asyncHandler(controller.
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Acesso negado (code "FORBIDDEN")
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       404:
  *         description: Município não encontrado (code "MUNICIPALITY_NOT_FOUND")
  *         content:
@@ -178,14 +197,20 @@ router.get('/:id', validate(municipalityIdParamSchema), asyncHandler(controller.
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.put('/:id', authMiddleware, validate(updateMunicipalitySchema), asyncHandler(controller.update));
+router.put(
+  '/:id',
+  authMiddleware,
+  requireRole('admin'),
+  validate(updateMunicipalitySchema),
+  asyncHandler(controller.update),
+);
 
 /**
  * @openapi
  * /municipalities/{id}:
  *   delete:
  *     tags: [Municipalities]
- *     summary: Remover município
+ *     summary: Remover município (apenas admin)
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -209,6 +234,12 @@ router.put('/:id', authMiddleware, validate(updateMunicipalitySchema), asyncHand
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Acesso negado (code "FORBIDDEN")
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       404:
  *         description: Município não encontrado (code "MUNICIPALITY_NOT_FOUND")
  *         content:
@@ -216,6 +247,12 @@ router.put('/:id', authMiddleware, validate(updateMunicipalitySchema), asyncHand
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.delete('/:id', authMiddleware, validate(municipalityIdParamSchema), asyncHandler(controller.remove));
+router.delete(
+  '/:id',
+  authMiddleware,
+  requireRole('admin'),
+  validate(municipalityIdParamSchema),
+  asyncHandler(controller.remove),
+);
 
 export { router as municipalityRoutes };

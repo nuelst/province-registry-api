@@ -32,7 +32,7 @@ export class LoginUseCase {
       throw AppError.unauthorized('Email ou password inválidos', 'INVALID_CREDENTIALS');
     }
 
-    const accessToken = this.tokenProvider.generate({ sub: user.id, email: user.email });
+    const accessToken = this.tokenProvider.generate({ sub: user.id, email: user.email, role: user.role });
 
     return { accessToken };
   }

@@ -1,6 +1,5 @@
 import type { CreateProvinceProps, Province, UpdateProvinceProps } from './province.entity';
 
-
 export interface ProvinceRepository {
   create(data: CreateProvinceProps): Promise<Province>;
   findAll(): Promise<Province[]>;

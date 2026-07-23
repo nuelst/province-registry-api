@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { asyncHandler } from '../../../shared/middlewares/async-handler';
 import { authMiddleware } from '../../../shared/middlewares/auth.middleware';
+import { requireRole } from '../../../shared/middlewares/require-role.middleware';
 import { validate } from '../../../shared/middlewares/validate.middleware';
 import { MongoMunicipalityRepository } from '../../municipality/infrastructure/mongo-municipality.repository';
 import { CreateProvinceUseCase } from '../application/create-province.use-case';
@@ -30,7 +31,7 @@ const router = Router();
  * /provinces:
  *   post:
  *     tags: [Provinces]
- *     summary: Criar uma nova província
+ *     summary: Criar uma nova província (apenas admin)
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -58,6 +59,12 @@ const router = Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Acesso negado (code "FORBIDDEN")
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       409:
  *         description: Província já existe (code "PROVINCE_ALREADY_EXISTS")
  *         content:
@@ -65,7 +72,13 @@ const router = Router();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/', authMiddleware, validate(createProvinceSchema), asyncHandler(controller.create));
+router.post(
+  '/',
+  authMiddleware,
+  requireRole('admin'),
+  validate(createProvinceSchema),
+  asyncHandler(controller.create),
+);
 
 /**
  * @openapi
@@ -118,7 +131,7 @@ router.get('/:id', validate(provinceIdParamSchema), asyncHandler(controller.getB
  * /provinces/{id}:
  *   put:
  *     tags: [Provinces]
- *     summary: Atualizar província
+ *     summary: Atualizar província (apenas admin)
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -146,6 +159,12 @@ router.get('/:id', validate(provinceIdParamSchema), asyncHandler(controller.getB
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Acesso negado (code "FORBIDDEN")
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       404:
  *         description: Província não encontrada (code "PROVINCE_NOT_FOUND")
  *         content:
@@ -159,14 +178,20 @@ router.get('/:id', validate(provinceIdParamSchema), asyncHandler(controller.getB
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.put('/:id', authMiddleware, validate(updateProvinceSchema), asyncHandler(controller.update));
+router.put(
+  '/:id',
+  authMiddleware,
+  requireRole('admin'),
+  validate(updateProvinceSchema),
+  asyncHandler(controller.update),
+);
 
 /**
  * @openapi
  * /provinces/{id}:
  *   delete:
  *     tags: [Provinces]
- *     summary: Remover província
+ *     summary: Remover província (apenas admin)
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -190,6 +215,12 @@ router.put('/:id', authMiddleware, validate(updateProvinceSchema), asyncHandler(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Acesso negado (code "FORBIDDEN")
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       404:
  *         description: Província não encontrada (code "PROVINCE_NOT_FOUND")
  *         content:
@@ -197,6 +228,12 @@ router.put('/:id', authMiddleware, validate(updateProvinceSchema), asyncHandler(
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.delete('/:id', authMiddleware, validate(provinceIdParamSchema), asyncHandler(controller.remove));
+router.delete(
+  '/:id',
+  authMiddleware,
+  requireRole('admin'),
+  validate(provinceIdParamSchema),
+  asyncHandler(controller.remove),
+);
 
 export { router as provinceRoutes };

@@ -1,3 +1,5 @@
+export type Role = 'admin' | 'user';
+
 export interface User {
   id: string;
   name: string;
@@ -5,6 +7,7 @@ export interface User {
   passwordHash: string;
   province: string;
   municipality: string;
+  role: Role;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -17,6 +20,7 @@ export interface CreateUserProps {
   password: string;
   province: string;
   municipality: string;
+  role?: Role;
 }
 
 export interface UpdateUserProps {
@@ -25,6 +29,7 @@ export interface UpdateUserProps {
   password?: string;
   province?: string;
   municipality?: string;
+  role?: Role;
 }
 
 export function toSafeUser(user: User): SafeUser {

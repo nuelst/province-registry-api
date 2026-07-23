@@ -44,6 +44,7 @@ export class RegisterUserUseCase {
       passwordHash,
       province: input.province,
       municipality: input.municipality,
+      role: input.role ?? 'user',
     });
 
     return toSafeUser(user);
